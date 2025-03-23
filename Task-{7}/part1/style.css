@@ -1,0 +1,13 @@
+.input, #create {
+    display: block;
+    margin: 20px auto;
+    width: 250px;
+    height: 35px;
+}
+#create {
+    cursor: pointer;
+    color: white;
+    background-color: rgb(15, 197, 146);
+    border: 0px;
+    border-radius: 5px;
+}
