@@ -1,18 +1,21 @@
 let input=document.querySelector(".my-input");
 let addButton=document.querySelector(".add-btn");
-let arr;
+let inProgressArray;
+let taskExist=true;
 window.addEventListener("load",()=>{
-    arr = JSON.parse(localStorage.getItem("arr")) || [];
+    inProgressArray = JSON.parse(localStorage.getItem("inProgressArray")) || [];
     
-    arr.forEach(e => {
+    inProgressArray.forEach(e => {
         generateTask(e);
     });
     
     
     addButton.addEventListener("click",()=>{
         if (input.value) {
-            arr.push(input.value)
-            localStorage.setItem("arr",JSON.stringify(arr));
+            
+
+            inProgressArray.push(input.value)
+            localStorage.setItem("inProgressArray",JSON.stringify(inProgressArray));
             generateTask(input.value);    
         }  
         input.value="";
@@ -21,11 +24,21 @@ window.addEventListener("load",()=>{
 })
 
 function generateTask(taskText) {
-   
-    let taskContainer=document.createElement("div");
-    taskContainer.setAttribute("class","task-content");
+    // to add task title one time for all tasks
+    if(taskExist){
+        let taskWord=document.createElement("div");
+        taskWord.textContent="In Progress Tasks";
+        taskWord.setAttribute("class","task-word");
+        document.body.appendChild(taskWord);
+        taskExist=false;
+    }
     
 
+    let allTasksContainer=document.createElement("div");
+    allTasksContainer.setAttribute("class","all-tasks");
+
+    let singleTaskContainer=document.createElement("div");
+    singleTaskContainer.setAttribute("class","task-content");
 
     let taskName=document.createElement("div");
     taskName.setAttribute("class","task-name");
@@ -39,42 +52,75 @@ function generateTask(taskText) {
     deleteBtn.src="Images\\delete.png";
     deleteBtn.setAttribute("class","delete-img");
 
-    taskContainer.appendChild(taskName);
-    taskContainer.appendChild(doneBtn);
-    taskContainer.appendChild(deleteBtn);
+    singleTaskContainer.appendChild(taskName);
+    singleTaskContainer.appendChild(doneBtn);
+    singleTaskContainer.appendChild(deleteBtn);
 
-    document.body.appendChild(taskContainer);
+    allTasksContainer.appendChild(singleTaskContainer);
 
+    document.body.appendChild(allTasksContainer);
 
     
+    let doneCounter=document.createElement("div");
+    let timeLeft=5;
+    doneCounter.textContent=timeLeft;
+    let deleteDoneTask;
+    let countdownInterval;
+
     doneBtn.addEventListener("click",()=>{
-        taskContainer.style.cssText="background-color:#89df08;color: white;"
-        deleteBtn.style.display="none";
-        let doneCounter=document.createElement("div");
-        doneCounter.textContent="5";
-        doneCounter.style.cssText="background-color: #15101C;text-align:center;padding-top:5px;border-radius:4px";
-        taskContainer.appendChild(doneCounter);
 
-        let id=setInterval(()=>{
-            doneCounter.textContent--;
-        },1000);
-         
-        if (!doneCounter.textContent) {
-            clearInterval(id)
-        }
-
-        doneBtn.style.cssText="filter:opacity(50%);pointer-events: none;"
+        
+        
+        // check if the button is the done or he already make done and want to re-done again
+        if (doneBtn.src.includes("done.png")) {
             
-        setTimeout(()=>{
-            taskContainer.style.display="none";
-            arr=arr.filter(task => task!==taskText);
-            localStorage.setItem("arr",JSON.stringify(arr));
+            doneBtn.src="Images\\unDone.png";
 
-                
-        },5000)
+            singleTaskContainer.style.cssText="background-color: #08df33ff;color: white;"
+            deleteBtn.style.display="none";
+           
+            doneCounter.style.cssText="background-color: #15101C;text-align:center;padding-top:5px;border-radius:4px";
+            singleTaskContainer.appendChild(doneCounter);
 
-            localStorage.setItem("container-done-background-color",taskContainer.style.backgroundColor);
-            localStorage.setItem("container-done-color",taskContainer.style.color);
+            countdownInterval=setInterval(()=>{
+                timeLeft--;
+                doneCounter.textContent=timeLeft;
+            },1000);
+            
+            if (timeLeft<=0) {
+                clearInterval(countdownInterval);
+            }  
+
+
+            deleteDoneTask=setTimeout(()=>{
+            singleTaskContainer.style.display="none";
+            inProgressArray=inProgressArray.filter(task => task!==taskText);
+            localStorage.setItem("inProgressArray",JSON.stringify(inProgressArray));   
+            },5000)
+       
+        }else if (doneBtn.src.includes("unDone.png")){
+            doneBtn.src="Images\\done.png";
+            singleTaskContainer.style.cssText="background-color: #15101C;color: #9E78CF;";
+            clearTimeout(deleteDoneTask);
+            clearInterval(countdownInterval);
+            deleteBtn.style.display="inline";
+            doneCounter.style.display="none";
+            timeLeft=5;
+            doneCounter.textContent=timeLeft;
+
+        }
+       
+        
+        // not used yet 
+        // for sve the green color for done in future
+        // localStorage.setItem("container-done-background-color",singleTaskContainer.style.backgroundColor);
+        // localStorage.setItem("container-done-color",singleTaskContainer.style.color);
+
+       
+
+        // doneBtn.style.cssText="filter:opacity(50%);pointer-events: none;"
+            
+     
            
         });
 
@@ -87,9 +133,9 @@ function generateTask(taskText) {
             })
             .then ((value)=>{
                 if (value) {
-                    taskContainer.style.display="none";
-                    arr=arr.filter(task => task!==taskText);
-                    localStorage.setItem("arr",JSON.stringify(arr));
+                    singleTaskContainer.style.display="none";
+                    inProgressArray=inProgressArray.filter(task => task!==taskText);
+                    localStorage.setItem("inProgressArray",JSON.stringify(inProgressArray));
                     
                 }
             })

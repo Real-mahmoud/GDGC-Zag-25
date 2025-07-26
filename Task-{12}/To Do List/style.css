@@ -13,6 +13,13 @@ body {
     align-items:flex-end;
 }
 
+h1 {
+   width: 100%;
+   text-align: center;
+   margin: -25px 0px 10px 0px;
+   color: rgb(120, 130, 240);
+}
+
 .my-input {
     width: 60%;
     height: 40px;
@@ -39,8 +46,23 @@ body {
     filter:brightness(60%);
 }
 
-.task-content {
+.task-word {
+    width: 100%;
+    text-align: center;
+    margin: 15px 0px 10px 0px;
+    font-size: 25px;
+    color: white;
+    
+}
+
+.all-tasks {
     width: 65%;
+    margin-top: 5px;
+    display: grid;
+    grid-template-columns: auto;
+}
+.task-content {
+    width: 100%;
     margin-top: 5px;
     padding: 10px;
     border-radius: 7px;
@@ -67,4 +89,8 @@ body {
     grid-column: 3/4;
     cursor: pointer;
     
+}
+
+.done-img {
+    border-radius: 5px;
 }
