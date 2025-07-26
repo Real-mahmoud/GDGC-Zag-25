@@ -1,11 +1,14 @@
 let input=document.querySelector(".my-input");
 let addButton=document.querySelector(".add-btn");
-let inProgressArray;
+let inProgressTasks;
+let doneTasks=[];
 let taskExist=true;
+let inProgressTasksTitle;
+
 window.addEventListener("load",()=>{
-    inProgressArray = JSON.parse(localStorage.getItem("inProgressArray")) || [];
+    inProgressTasks = JSON.parse(localStorage.getItem("inProgressTasks")) || [];
     
-    inProgressArray.forEach(e => {
+    inProgressTasks.forEach(e => {
         generateTask(e);
     });
     
@@ -14,8 +17,8 @@ window.addEventListener("load",()=>{
         if (input.value) {
             
 
-            inProgressArray.push(input.value)
-            localStorage.setItem("inProgressArray",JSON.stringify(inProgressArray));
+            inProgressTasks.push(input.value)
+            localStorage.setItem("inProgressTasks",JSON.stringify(inProgressTasks));
             generateTask(input.value);    
         }  
         input.value="";
@@ -24,18 +27,23 @@ window.addEventListener("load",()=>{
 })
 
 function generateTask(taskText) {
-    // to add task title one time for all tasks
+    // to add task title just one time for all tasks
+    
     if(taskExist){
-        let taskWord=document.createElement("div");
-        taskWord.textContent="In Progress Tasks";
-        taskWord.setAttribute("class","task-word");
-        document.body.appendChild(taskWord);
+       inProgressTasksTitle=document.createElement("div");
+        inProgressTasksTitle.textContent="In Progress Tasks";
+        inProgressTasksTitle.setAttribute("class","task-word");
+        document.body.appendChild(inProgressTasksTitle);
         taskExist=false;
     }
+
     
+    function taskElements(){
+        
+    }
 
     let allTasksContainer=document.createElement("div");
-    allTasksContainer.setAttribute("class","all-tasks");
+    allTasksContainer.setAttribute("class","in-prog-tasks");
 
     let singleTaskContainer=document.createElement("div");
     singleTaskContainer.setAttribute("class","task-content");
@@ -69,8 +77,6 @@ function generateTask(taskText) {
 
     doneBtn.addEventListener("click",()=>{
 
-        
-        
         // check if the button is the done or he already make done and want to re-done again
         if (doneBtn.src.includes("done.png")) {
             
@@ -85,17 +91,39 @@ function generateTask(taskText) {
             countdownInterval=setInterval(()=>{
                 timeLeft--;
                 doneCounter.textContent=timeLeft;
+
+
+                if (timeLeft===0) {
+                clearInterval(countdownInterval);
+
+
+                // if time of the done tasks done(end) then make a list for done tasks
+
+                let doneTasksContainer=document.createElement("div");
+                doneTasksContainer.setAttribute("class","done-tasks");
+
+                doneTasks.push(taskText);
+                console.log(doneTasks);
+                
+                localStorage.setItem("DoneTasks",JSON.stringify(doneTasks));
+            }
             },1000);
             
-            if (timeLeft<=0) {
-                clearInterval(countdownInterval);
-            }  
+            
+           
+            
 
-
+            // wait 5 sec until remove the done task from in progress tasks
             deleteDoneTask=setTimeout(()=>{
             singleTaskContainer.style.display="none";
-            inProgressArray=inProgressArray.filter(task => task!==taskText);
-            localStorage.setItem("inProgressArray",JSON.stringify(inProgressArray));   
+            inProgressTasks=inProgressTasks.filter(task => task!==taskText);
+            localStorage.setItem("inProgressTasks",JSON.stringify(inProgressTasks));  
+            
+            if (inProgressTasks.length === 0 ) {
+                inProgressTasksTitle.style.display = "none";
+                taskExist = true; // allow showing again when new task is added
+            };
+
             },5000)
        
         }else if (doneBtn.src.includes("unDone.png")){
@@ -134,11 +162,18 @@ function generateTask(taskText) {
             .then ((value)=>{
                 if (value) {
                     singleTaskContainer.style.display="none";
-                    inProgressArray=inProgressArray.filter(task => task!==taskText);
-                    localStorage.setItem("inProgressArray",JSON.stringify(inProgressArray));
+                    inProgressTasks=inProgressTasks.filter(task => task!==taskText);
+                    localStorage.setItem("inProgressTasks",JSON.stringify(inProgressTasks));
+
+                    if (inProgressTasks.length === 0 ) {
+                        inProgressTasksTitle.style.display = "none";
+                        taskExist = true; 
+                    }
                     
                 }
             })
+
+            
             
         });
 

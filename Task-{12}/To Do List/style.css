@@ -55,7 +55,7 @@ h1 {
     
 }
 
-.all-tasks {
+.in-prog-tasks {
     width: 65%;
     margin-top: 5px;
     display: grid;
@@ -76,7 +76,7 @@ h1 {
 .task-content .task-name{
     grid-column: 1/2;
     padding-top: 5px;
-    font-size: 18px;
+    font-size: 20px;
 
 }
 
