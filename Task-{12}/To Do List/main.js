@@ -1,22 +1,38 @@
 let input=document.querySelector(".my-input");
 let addButton=document.querySelector(".add-btn");
+let allTasksContainer;
+let doneTasksContainer;
 let inProgressTasks;
 let doneTasks=[];
 let taskExist=true;
+let doneTaskExist=true;
 let inProgressTasksTitle;
+let doneTasksTitle;
 
 window.addEventListener("load",()=>{
+
     inProgressTasks = JSON.parse(localStorage.getItem("inProgressTasks")) || [];
-    
+    allTasksContainer=document.createElement("div");
+    allTasksContainer.setAttribute("class","in-prog-tasks");
+
     inProgressTasks.forEach(e => {
         generateTask(e);
     });
-    
+
+    doneTasks=JSON.parse(localStorage.getItem("DoneTasks")) || [];
+    doneTasksContainer=document.createElement("div");
+    doneTasksContainer.setAttribute("class","done-tasks");
+   
+    doneTasks.forEach(e => {
+        generateDoneTask(e);
+    });
+
+    // this when add new task the order of both in prog and done tasks will be the same
+    document.body.appendChild(allTasksContainer);
+    document.body.appendChild(doneTasksContainer);
     
     addButton.addEventListener("click",()=>{
         if (input.value) {
-            
-
             inProgressTasks.push(input.value)
             localStorage.setItem("inProgressTasks",JSON.stringify(inProgressTasks));
             generateTask(input.value);    
@@ -33,17 +49,9 @@ function generateTask(taskText) {
        inProgressTasksTitle=document.createElement("div");
         inProgressTasksTitle.textContent="In Progress Tasks";
         inProgressTasksTitle.setAttribute("class","task-word");
-        document.body.appendChild(inProgressTasksTitle);
+        allTasksContainer.appendChild(inProgressTasksTitle);
         taskExist=false;
     }
-
-    
-    function taskElements(){
-        
-    }
-
-    let allTasksContainer=document.createElement("div");
-    allTasksContainer.setAttribute("class","in-prog-tasks");
 
     let singleTaskContainer=document.createElement("div");
     singleTaskContainer.setAttribute("class","task-content");
@@ -65,9 +73,6 @@ function generateTask(taskText) {
     singleTaskContainer.appendChild(deleteBtn);
 
     allTasksContainer.appendChild(singleTaskContainer);
-
-    document.body.appendChild(allTasksContainer);
-
     
     let doneCounter=document.createElement("div");
     let timeLeft=5;
@@ -94,31 +99,32 @@ function generateTask(taskText) {
 
 
                 if (timeLeft===0) {
-                clearInterval(countdownInterval);
+                    clearInterval(countdownInterval);
 
 
-                // if time of the done tasks done(end) then make a list for done tasks
+                    // if time of the done tasks done(end) then make a list for done tasks
 
-                let doneTasksContainer=document.createElement("div");
-                doneTasksContainer.setAttribute("class","done-tasks");
+                    doneTasks.push(taskText);
+                    localStorage.setItem("DoneTasks",JSON.stringify(doneTasks));
 
-                doneTasks.push(taskText);
-                console.log(doneTasks);
-                
-                localStorage.setItem("DoneTasks",JSON.stringify(doneTasks));
-            }
+                    if (!document.body.contains(doneTasksContainer)) {
+                    doneTasksContainer = document.createElement("div");
+                    doneTasksContainer.setAttribute("class", "done-tasks");
+                    doneTasksContainer.appendChild(doneTasksTitle)
+                    document.body.appendChild(doneTasksContainer);
+                    
+                    }
+                    generateDoneTask(taskText);                   
+                }
             },1000);
             
-            
-           
-            
-
             // wait 5 sec until remove the done task from in progress tasks
             deleteDoneTask=setTimeout(()=>{
             singleTaskContainer.style.display="none";
             inProgressTasks=inProgressTasks.filter(task => task!==taskText);
             localStorage.setItem("inProgressTasks",JSON.stringify(inProgressTasks));  
             
+            // delete the title for in progress tasks
             if (inProgressTasks.length === 0 ) {
                 inProgressTasksTitle.style.display = "none";
                 taskExist = true; // allow showing again when new task is added
@@ -135,48 +141,81 @@ function generateTask(taskText) {
             doneCounter.style.display="none";
             timeLeft=5;
             doneCounter.textContent=timeLeft;
-
         }
        
-        
-        // not used yet 
-        // for sve the green color for done in future
-        // localStorage.setItem("container-done-background-color",singleTaskContainer.style.backgroundColor);
-        // localStorage.setItem("container-done-color",singleTaskContainer.style.color);
+        // for save the green color for done in future
+        localStorage.setItem("container-done-background-color",singleTaskContainer.style.backgroundColor); // green
+        localStorage.setItem("container-done-color",singleTaskContainer.style.color); // white     
+    });
 
-       
+    deleteBtn.addEventListener("click",()=>{
+        swal({
+            title: "Deletion",
+            text: "Are You Sure You Want To Delete?",
+            icon: "warning",
+            buttons: true,
+        })
+        .then ((value)=>{
+            if (value) {
+                singleTaskContainer.style.display="none";
+                inProgressTasks=inProgressTasks.filter(task => task!==taskText);
+                localStorage.setItem("inProgressTasks",JSON.stringify(inProgressTasks));
 
-        // doneBtn.style.cssText="filter:opacity(50%);pointer-events: none;"
-            
+                if (inProgressTasks.length === 0 ) {
+                    inProgressTasksTitle.style.display = "none";
+                    taskExist = true; 
+                }                  
+            }
+        })
+    });  
+}
+
+function generateDoneTask (taskText){
      
-           
-        });
+    if(doneTaskExist){
+        doneTasksTitle=document.createElement("div");
+        doneTasksTitle.textContent="Done Tasks";
+        doneTasksTitle.setAttribute("class","task-word");
+        doneTasksContainer.appendChild(doneTasksTitle);
+        doneTaskExist=false;
+    }
 
-        deleteBtn.addEventListener("click",()=>{
-           swal({
-                title: "Deletion",
-                text: "Are You Sure You Want To Delete?",
-                icon: "warning",
-                buttons: true,
-            })
-            .then ((value)=>{
-                if (value) {
-                    singleTaskContainer.style.display="none";
-                    inProgressTasks=inProgressTasks.filter(task => task!==taskText);
-                    localStorage.setItem("inProgressTasks",JSON.stringify(inProgressTasks));
+    let singleTaskContainer=document.createElement("div");
+    singleTaskContainer.setAttribute("class","task-content");
+    singleTaskContainer.style.backgroundColor=localStorage.getItem("container-done-background-color")
+    singleTaskContainer.style.color=localStorage.getItem("container-done-color")
 
-                    if (inProgressTasks.length === 0 ) {
-                        inProgressTasksTitle.style.display = "none";
-                        taskExist = true; 
-                    }
-                    
-                }
-            })
+    let taskName=document.createElement("div");
+    taskName.setAttribute("class","task-name");
+    taskName.textContent=taskText;
 
-            
-            
-        });
+    let deleteBtn=document.createElement("img");
+    deleteBtn.src="Images\\delete.png";
+    deleteBtn.setAttribute("class","delete-img");
 
+    singleTaskContainer.appendChild(taskName);
+    singleTaskContainer.appendChild(deleteBtn);
 
-    
+    doneTasksContainer.appendChild(singleTaskContainer);
+
+    deleteBtn.addEventListener("click",()=>{
+        swal({
+            title: "Deletion",
+            text: "Are You Sure You Want To Delete?",
+            icon: "warning",
+            buttons: true,
+        })
+        .then ((value)=>{
+            if (value) {
+                singleTaskContainer.style.display="none";
+                doneTasks=doneTasks.filter(task => task!==taskText);
+                localStorage.setItem("DoneTasks",JSON.stringify(doneTasks));
+
+                if (doneTasks.length === 0 ) {
+                    doneTasksTitle.style.display = "none";
+                    doneTaskExist=true;
+                }                  
+            }
+        })
+    });  
 }

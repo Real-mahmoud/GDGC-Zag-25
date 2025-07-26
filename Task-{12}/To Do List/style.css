@@ -55,7 +55,7 @@ h1 {
     
 }
 
-.in-prog-tasks {
+.in-prog-tasks , .done-tasks {
     width: 65%;
     margin-top: 5px;
     display: grid;
