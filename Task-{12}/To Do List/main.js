@@ -33,11 +33,22 @@ window.addEventListener("load",()=>{
     
     addButton.addEventListener("click",()=>{
         if (input.value) {
-            inProgressTasks.push(input.value)
+            inProgressTasks.push(input.value);
             localStorage.setItem("inProgressTasks",JSON.stringify(inProgressTasks));
             generateTask(input.value);    
         }  
         input.value="";
+    })
+
+    document.addEventListener("keyup",(e)=>{
+        if(e.key==="Enter"){
+            if (input.value) {
+            inProgressTasks.push(input.value);
+            localStorage.setItem("inProgressTasks",JSON.stringify(inProgressTasks));
+            generateTask(input.value);    
+        }  
+            input.value="";
+        }
     })
 
 })
@@ -80,6 +91,7 @@ function generateTask(taskText) {
     let deleteDoneTask;
     let countdownInterval;
 
+    
     doneBtn.addEventListener("click",()=>{
 
         // check if the button is the done or he already make done and want to re-done again
