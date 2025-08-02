@@ -90,7 +90,7 @@ function generateTask(taskText) {
             singleTaskContainer.style.cssText="background-color: #08df33ff;color: white;"
             deleteBtn.style.display="none";
            
-            doneCounter.style.cssText="background-color: #15101C;text-align:center;padding-top:5px;border-radius:4px";
+            doneCounter.style.cssText="background-color: #15101C;text-align:center;padding-top:5px;border-radius:4px;height:30px";
             singleTaskContainer.appendChild(doneCounter);
 
             countdownInterval=setInterval(()=>{
