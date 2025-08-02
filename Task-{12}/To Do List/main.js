@@ -50,12 +50,10 @@ window.addEventListener("load",()=>{
             input.value="";
         }
     })
-
 })
 
 function generateTask(taskText) {
     // to add task title just one time for all tasks
-    
     if(taskExist){
        inProgressTasksTitle=document.createElement("div");
         inProgressTasksTitle.textContent="In Progress Tasks";
@@ -91,7 +89,6 @@ function generateTask(taskText) {
     let deleteDoneTask;
     let countdownInterval;
 
-    
     doneBtn.addEventListener("click",()=>{
 
         // check if the button is the done or he already make done and want to re-done again
@@ -108,7 +105,6 @@ function generateTask(taskText) {
             countdownInterval=setInterval(()=>{
                 timeLeft--;
                 doneCounter.textContent=timeLeft;
-
 
                 if (timeLeft===0) {
                     clearInterval(countdownInterval);
@@ -153,11 +149,7 @@ function generateTask(taskText) {
             doneCounter.style.display="none";
             timeLeft=5;
             doneCounter.textContent=timeLeft;
-        }
-       
-        // for save the green color for done in future
-        localStorage.setItem("container-done-background-color",singleTaskContainer.style.backgroundColor); // green
-        localStorage.setItem("container-done-color",singleTaskContainer.style.color); // white     
+        }    
     });
 
     deleteBtn.addEventListener("click",()=>{
@@ -194,8 +186,8 @@ function generateDoneTask (taskText){
 
     let singleTaskContainer=document.createElement("div");
     singleTaskContainer.setAttribute("class","task-content");
-    singleTaskContainer.style.backgroundColor=localStorage.getItem("container-done-background-color")
-    singleTaskContainer.style.color=localStorage.getItem("container-done-color")
+    singleTaskContainer.style.backgroundColor="#08df33ff"
+    singleTaskContainer.style.color="white"
 
     let taskName=document.createElement("div");
     taskName.setAttribute("class","task-name");
