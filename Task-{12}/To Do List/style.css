@@ -82,7 +82,7 @@ h1 {
 }
 
 .task-content .task-date{
-    grid-column: 1/2;
+    grid-column: 1/4;
     grid-row: 2 / 3;
     padding-top: 5px;
     font-size: 17px;
