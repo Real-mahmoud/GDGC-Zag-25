@@ -53,7 +53,7 @@ window.addEventListener("load",()=>{
         let theDateOfTheTask=new Date();
         let taskObj= {
             text:input.value,
-            date:`Date: ${theDateOfTheTask.toLocaleDateString()} ${theDateOfTheTask.toLocaleTimeString()}`
+            date:`Date: ${theDateOfTheTask.toLocaleDateString()} ${theDateOfTheTask.toLocaleTimeString("en-US")}`
         }
         inProgressTasks.push(taskObj);
         localStorage.setItem("inProgressTasks",JSON.stringify(inProgressTasks));
