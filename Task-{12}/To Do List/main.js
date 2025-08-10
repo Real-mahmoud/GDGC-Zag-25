@@ -3,6 +3,7 @@ let addButton=document.querySelector(".add-btn");
 let allTasksContainer;
 let doneTasksContainer;
 let inProgressTasks;
+let dateOfTheTask=[];
 let doneTasks=[];
 let taskExist=true;
 let doneTaskExist=true;
@@ -10,13 +11,13 @@ let inProgressTasksTitle;
 let doneTasksTitle;
 
 window.addEventListener("load",()=>{
-
+    
     inProgressTasks = JSON.parse(localStorage.getItem("inProgressTasks")) || [];
     allTasksContainer=document.createElement("div");
     allTasksContainer.setAttribute("class","in-prog-tasks");
 
-    inProgressTasks.forEach(e => {
-        generateTask(e);
+    inProgressTasks.forEach(taskObj => {
+        generateTask(taskObj);
     });
 
     doneTasks=JSON.parse(localStorage.getItem("DoneTasks")) || [];
@@ -28,31 +29,39 @@ window.addEventListener("load",()=>{
     });
 
     // this when add new task the order of both in prog and done tasks will be the same
-    document.body.appendChild(allTasksContainer);
-    document.body.appendChild(doneTasksContainer);
+    document.body.append(allTasksContainer,doneTasksContainer);
     
+    // when click on add button
     addButton.addEventListener("click",()=>{
         if (input.value) {
-            inProgressTasks.push(input.value);
-            localStorage.setItem("inProgressTasks",JSON.stringify(inProgressTasks));
-            generateTask(input.value);    
+          fullTaskGeneration()  
         }  
         input.value="";
     })
 
+    // when click on Enter key
     document.addEventListener("keyup",(e)=>{
         if(e.key==="Enter"){
             if (input.value) {
-            inProgressTasks.push(input.value);
-            localStorage.setItem("inProgressTasks",JSON.stringify(inProgressTasks));
-            generateTask(input.value);    
+            fullTaskGeneration();   
         }  
             input.value="";
         }
-    })
+    });
+
+    function fullTaskGeneration(){
+        let theDateOfTheTask=new Date();
+        let taskObj= {
+            text:input.value,
+            date:`Date: ${theDateOfTheTask.toLocaleDateString()} ${theDateOfTheTask.toLocaleTimeString()}`
+        }
+        inProgressTasks.push(taskObj);
+        localStorage.setItem("inProgressTasks",JSON.stringify(inProgressTasks));
+        generateTask(taskObj); 
+    }
 })
 
-function generateTask(taskText) {
+function generateTask(taskObj) {
     // to add task title just one time for all tasks
     if(taskExist){
        inProgressTasksTitle=document.createElement("div");
@@ -67,7 +76,11 @@ function generateTask(taskText) {
 
     let taskName=document.createElement("div");
     taskName.setAttribute("class","task-name");
-    taskName.textContent=taskText;
+    taskName.textContent=taskObj.text;
+
+    let taskDate=document.createElement("div");
+    taskDate.setAttribute("class","task-date");
+    taskDate.textContent=taskObj.date;
 
     let doneBtn=document.createElement("img");
     doneBtn.src="Images\\done.png";
@@ -77,9 +90,7 @@ function generateTask(taskText) {
     deleteBtn.src="Images\\delete.png";
     deleteBtn.setAttribute("class","delete-img");
 
-    singleTaskContainer.appendChild(taskName);
-    singleTaskContainer.appendChild(doneBtn);
-    singleTaskContainer.appendChild(deleteBtn);
+    singleTaskContainer.append(taskName,taskDate,doneBtn,deleteBtn);
 
     allTasksContainer.appendChild(singleTaskContainer);
     
@@ -97,6 +108,8 @@ function generateTask(taskText) {
             doneBtn.src="Images\\unDone.png";
 
             singleTaskContainer.style.cssText="background-color: #08df33ff;color: white;"
+            taskDate.style.color="#ffffffb2";
+        
             deleteBtn.style.display="none";
            
             doneCounter.style.cssText="background-color: #15101C;text-align:center;padding-top:5px;border-radius:4px;height:30px";
@@ -112,7 +125,7 @@ function generateTask(taskText) {
 
                     // if time of the done tasks done(end) then make a list for done tasks
 
-                    doneTasks.push(taskText);
+                    doneTasks.push(taskObj);
                     localStorage.setItem("DoneTasks",JSON.stringify(doneTasks));
 
                     if (!document.body.contains(doneTasksContainer)) {
@@ -122,14 +135,14 @@ function generateTask(taskText) {
                     document.body.appendChild(doneTasksContainer);
                     
                     }
-                    generateDoneTask(taskText);                   
+                    generateDoneTask(taskObj);                   
                 }
             },1000);
             
             // wait 5 sec until remove the done task from in progress tasks
             deleteDoneTask=setTimeout(()=>{
             singleTaskContainer.style.display="none";
-            inProgressTasks=inProgressTasks.filter(task => task!==taskText);
+            inProgressTasks=inProgressTasks.filter(task => task.text!==taskObj.text);
             localStorage.setItem("inProgressTasks",JSON.stringify(inProgressTasks));  
             
             // delete the title for in progress tasks
@@ -143,6 +156,7 @@ function generateTask(taskText) {
         }else if (doneBtn.src.includes("unDone.png")){
             doneBtn.src="Images\\done.png";
             singleTaskContainer.style.cssText="background-color: #15101C;color: #9E78CF;";
+            taskDate.style.color="#9e78cf78";
             clearTimeout(deleteDoneTask);
             clearInterval(countdownInterval);
             deleteBtn.style.display="inline";
@@ -162,7 +176,7 @@ function generateTask(taskText) {
         .then ((value)=>{
             if (value) {
                 singleTaskContainer.style.display="none";
-                inProgressTasks=inProgressTasks.filter(task => task!==taskText);
+                inProgressTasks=inProgressTasks.filter(task => task.text!==taskObj.text);
                 localStorage.setItem("inProgressTasks",JSON.stringify(inProgressTasks));
 
                 if (inProgressTasks.length === 0 ) {
@@ -174,7 +188,8 @@ function generateTask(taskText) {
     });  
 }
 
-function generateDoneTask (taskText){
+
+function generateDoneTask (taskObj){
      
     if(doneTaskExist){
         doneTasksTitle=document.createElement("div");
@@ -191,13 +206,18 @@ function generateDoneTask (taskText){
 
     let taskName=document.createElement("div");
     taskName.setAttribute("class","task-name");
-    taskName.textContent=taskText;
+    taskName.textContent=taskObj.text;
+
+    let taskDate=document.createElement("div");
+    taskDate.setAttribute("class","task-date");
+    taskDate.style.color="#ffffffb2";
+    taskDate.textContent=taskObj.date;
 
     let deleteBtn=document.createElement("img");
     deleteBtn.src="Images\\delete.png";
     deleteBtn.setAttribute("class","delete-img");
 
-    singleTaskContainer.appendChild(taskName);
+    singleTaskContainer.append(taskName,taskDate,deleteBtn);
     singleTaskContainer.appendChild(deleteBtn);
 
     doneTasksContainer.appendChild(singleTaskContainer);
@@ -212,7 +232,7 @@ function generateDoneTask (taskText){
         .then ((value)=>{
             if (value) {
                 singleTaskContainer.style.display="none";
-                doneTasks=doneTasks.filter(task => task!==taskText);
+                doneTasks=doneTasks.filter(task => task.text!==taskObj.text);
                 localStorage.setItem("DoneTasks",JSON.stringify(doneTasks));
 
                 if (doneTasks.length === 0 ) {

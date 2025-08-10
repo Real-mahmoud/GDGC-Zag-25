@@ -69,15 +69,24 @@ h1 {
     
     display: grid;
     grid-template-columns: 1fr 40px 40px;
+    grid-template-rows: 1fr 20px;
     background-color: #15101C;
     color: #9E78CF;
 }
 
 .task-content .task-name{
     grid-column: 1/2;
+    grid-row: 1/2;
     padding-top: 5px;
     font-size: 20px;
+}
 
+.task-content .task-date{
+    grid-column: 1/2;
+    grid-row: 2 / 3;
+    padding-top: 5px;
+    font-size: 17px;
+    color: #9e78cf78;
 }
 
 .task-content .done-img{
